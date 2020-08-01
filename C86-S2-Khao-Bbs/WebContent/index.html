@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<TITLE>论坛</TITLE>
+<Link rel="stylesheet" type="text/css" href="style/style.css" />
+<script type="text/javascript"src="js/jquery-3.4.1.js"></script>
+<script type="text/javascript"src="js/vue.min.js"></script>
+</HEAD>
+
+<BODY>
+
+<DIV>
+	<IMG src="image/logo.gif">
+</DIV>
+<!--      用户信息、登录、注册        -->
+
+<DIV class="h">
+<span v-if="loginedUser.uname">欢迎{{loginedUser.uname}}</span>
+<span v-else>您尚未　<a href="login.html">登录</a></span>
+	&nbsp;| &nbsp; <A href="reg.html">注册</A> |
+</DIV>
+<script type="text/javascript">
+	 var vue1=new Vue({
+		 el:".h",
+		 data:{
+			 loginedUser:{}
+		 },
+		 created:function(){
+			var url="getloginuserServlet.do";
+			$.post(url,null,function(msg){
+				if(msg!=null){
+					vue1.$data.loginedUser=JSON.parse(msg);
+				}
+			});
+		}
+		 
+	 });
+</script>
+<!--      主体        -->
+<DIV class="t">
+	<TABLE cellSpacing="0" cellPadding="0" width="100%">
+		<TR class="tr2" align="center">
+			<TD colSpan="2">论坛</TD>
+			<TD style="WIDTH: 10%;">主题</TD>
+			<TD style="WIDTH: 30%">最后发表</TD>
+		</TR>
+	<!--       主版块       -->
+<template v-for="b in list">
+	<TR v-if="showParent(b.pname)" class="tr3">
+		<TD colspan="4">{{b.pname}}</TD>
+	</TR>
+	<!--       子版块       -->
+
+	<TR class="tr3">
+		<TD width="5%">&nbsp;</TD>
+		<TH align="left">
+			<IMG src="image/board.gif">
+			<A v-bind:href="'list.html#'+b.boardid">{{b.bname}}</A>
+		</TH>
+		<TD align="center">{{b.cnt}}</TD>
+		<TH>
+			<SPAN>
+				<A v-bind:href="'detail.html#'+b.topicid">{{b.title}}</A>
+			</SPAN>
+			<BR/>
+			<SPAN>{{b.uid}}</SPAN>
+			<SPAN class="gray">[ {{b.publishtime}} ]</SPAN>
+		</TH>
+	</TR>	
+	</template>
+	</TABLE>
+</DIV>
+<script type="text/javascript">
+var currentBoardName=null;//循环时当前的板块名
+	var vue2 = new Vue({
+		el:".t",
+		data:{
+			list:[]
+		},
+		created:function(){
+			var url="indexServlet.do";
+			$.post(url,null,function(json){
+				vue2.$data.list=JSON.parse(json);
+			});
+		},
+		methods:{
+			showParent(pname){
+				if(pname==currentBoardName){
+					return false;
+				}else{
+					currentBoardName=pname;
+					return true;
+				}
+			}
+		}
+	});
+</script>
+
+<BR/>
+<CENTER class="gray">源辰信息</CENTER>
+</BODY>
+</HTML>

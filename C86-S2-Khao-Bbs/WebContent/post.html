@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<TITLE>论坛--发表帖子</TITLE>
+<Link rel="stylesheet" type="text/css" href="style/style.css"/>
+<script type="text/javascript"src="js/jquery-3.4.1.js"></script>
+<script type="text/javascript"src="js/vue.min.js"></script>
+</HEAD>
+
+<BODY>
+<DIV>
+	<IMG src="image/logo.gif">
+</DIV>
+<!--      用户信息、登录、注册        -->
+
+<DIV class="h">
+	<span v-if="loginedUser !='' ">欢迎{{loginedUser.uname}}</span>
+	<span v-else>您尚未　<a href="login.html">登录</a></span>
+	&nbsp;| &nbsp; <A href="reg.html">注册</A> |
+</DIV>
+<script type="text/javascript">
+	 var vue1=new Vue({
+		 el:".h",
+		 data:{
+			 loginedUser:{}
+		 },
+		 created:function(){
+			var url="getloginuserServlet.do";
+			$.post(url,null,function(msg){
+				vue1.$data.loginedUser=JSON.parse(msg);
+			});
+		}
+		 
+	 });
+</script>
+<BR/>
+<!--      导航        -->
+<DIV>
+	&gt;&gt;<B><a href="index.html">论坛首页</a></B>
+</DIV>
+<!--      用户登录表单        -->
+<DIV class="t" style="MARGIN-TOP: 15px" align="center">
+	<FORM name="loginForm" action="" method="post">
+		<br/>标	题 &nbsp;<INPUT v-model="title" class="input" tabIndex="1" maxLength="20" size="40" name="uName"><br>
+		<br/>内	容 &nbsp;<textarea v-model="content" class="input" tabIndex="2" style="width:300px;height:100px"></textarea>
+		<br/><INPUT @click="login()"class="btn"  tabIndex="6"  type="button" value="发	表">
+	</FORM>
+</DIV>
+<script type="text/javascript">
+	var vue=new Vue({
+		el:".t",
+		data:{
+			title:"",
+			content:""
+		},
+		methods:{
+			login(){	
+				var url="addtopicServlet.do";	
+				var boardid=location.hash.substring(1);
+				var user={
+					title:this.title,
+					content:this.content,
+					boardid:boardid
+			};
+				$.post(url,user,function(msg){
+					alert(msg);
+					if(msg=='发表成功'){
+						location.href="list.html#"+boardid;
+					}
+				});
+			}
+		}
+	});
+</script>
+<!--      声明        -->
+<BR/>
+<CENTER class="gray">源辰信息</CENTER>
+</BODY>
+</HTML>
